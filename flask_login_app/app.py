@@ -14,9 +14,32 @@ dynamodb = boto3.resource(
 
 @app.route('/')
 def index():
-    dynamodb_ct.create_table()
-    return 'Table Created'
-    # return render_template('index.html')
+    # dynamodb_ct.create_table()
+    # return 'Table Created'
+    return render_template('index.html')
 
+@app.route('/login')
+def login():    
+    return render_template('login.html')
+    
+@app.route('/signup', methods=['post'])
+def signup():
+    name = request.form['name']
+    email = request.form['email']
+    password = request.form['password']
+    table = dynamodb.Table('users')#getting the table
+    
+    table.put_item(
+                Item={
+        'name': name,
+        'email': email,
+        'password': password
+            }
+        )
+    
+    msg = "Registration Complete. Please Login to your account !"
+    
+    return render_template('login.html', msg = msg)
+    
 if __name__ == '__main__':
     app.run(debug=True,port=8080,host='0.0.0.0')
