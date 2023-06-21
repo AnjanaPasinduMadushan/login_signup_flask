@@ -5,6 +5,8 @@ import dynamoDB_create_table as dynamodb_ct
 
 app = Flask(__name__)
 
+from boto3.dynamodb.conditions import Key, Attr
+
 dynamodb = boto3.resource(
     'dynamodb',
     #aws_access_key_id     = keys.ACCESS_KEY_ID,
@@ -41,5 +43,26 @@ def signup():
     
     return render_template('login.html', msg = msg)
     
+@app.route('/check', methods = ['POST'])
+def check():
+    email = request.form['email']
+    password = request.form['password']
+    
+    table = dynamodb.Table('users')#getting the table
+    
+    response = table.query(
+                KeyConditionExpression=Key('email').eq(email)
+        )
+    
+    items = response['Items']
+    name = items[0]['name']
+    
+    if password == items[0]['password']:
+            
+        return render_template("home.html",name = name)
+        
+    errormsg = "Invalid Credintials!"
+    return render_template("login.html", errormsg = errormsg)
+
 if __name__ == '__main__':
     app.run(debug=True,port=8080,host='0.0.0.0')
