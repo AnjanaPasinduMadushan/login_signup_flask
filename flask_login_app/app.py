@@ -55,14 +55,19 @@ def check():
         )
     
     items = response['Items']
-    name = items[0]['name']
-    
-    if password == items[0]['password']:
-            
-        return render_template("home.html",name = name)
+    if items:
+        name = items[0]['name']
         
-    errormsg = "Invalid Credintials!"
-    return render_template("login.html", errormsg = errormsg)
+        if password == items[0]['password']:
+                
+            return render_template("home.html",name = name)
+            
+        errormsg = "Invalid Password!"
+        return render_template("login.html", errormsg = errormsg)
+    
+    else:
+        errormsg2 = "Invalid E-mail!"
+        return render_template("login.html", errormsg2 = errormsg2)
 
 if __name__ == '__main__':
     app.run(debug=True,port=8080,host='0.0.0.0')
